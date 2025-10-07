@@ -1,17 +1,20 @@
 /*
  * jQuery UI Nested Sortable
- * v 2.0 / 29 oct 2012
+ * v 2.1 / 15 oct 2025
  * http://mjsarfatti.com/sandbox/nestedSortable
  *
  * Depends on:
  *	 jquery.ui.sortable.js 1.10+
+ *
+ * Modified for jQuery UI 1.13+ compatibility:
+ * - Added dragDirection initialization for _intersectsWithPointer method
  *
  * Copyright (c) 2010-2013 Manuele J Sarfatti
  * Licensed under the MIT License
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-(function($) {
+ (function($) {
 
 	function isOverAxis( x, reference, size ) {
 		return ( x > reference ) && ( x < ( reference + size ) );
@@ -146,23 +149,30 @@
 			this.hovering = this.hovering ? this.hovering : null;
 			this.mouseentered = this.mouseentered ? this.mouseentered : false;
 
-			// mjs - let's start caching some variables
-			var parentItem = (this.placeholder[0].parentNode.parentNode &&
-							 $(this.placeholder[0].parentNode.parentNode).closest('.ui-sortable').length)
-				       			? $(this.placeholder[0].parentNode.parentNode)
-				       			: null,
-			    level = this._getLevel(this.placeholder),
-			    childLevels = this._getChildLevels(this.helper);
+		// mjs - let's start caching some variables
+		var parentItem = (this.placeholder[0].parentNode.parentNode &&
+						 $(this.placeholder[0].parentNode.parentNode).closest('.ui-sortable').length)
+			       			? $(this.placeholder[0].parentNode.parentNode)
+			       			: null,
+		    level = this._getLevel(this.placeholder),
+		    childLevels = this._getChildLevels(this.helper);
 
-			var newList = document.createElement(o.listType);
+		var newList = document.createElement(o.listType);
 
-			//Rearrange
-			for (i = this.items.length - 1; i >= 0; i--) {
+		// Initialize and update dragDirection for jQuery UI 1.13+ compatibility
+		// The _intersectsWithPointer method expects this.dragDirection to exist and contain current direction
+		this.dragDirection = {
+			vertical: this._getDragVerticalDirection(),
+			horizontal: this._getDragHorizontalDirection()
+		};
 
-				//Cache variables and intersection, continue if no intersection
-				item = this.items[i];
-				itemElement = item.item[0];
-				intersection = this._intersectsWithPointer(item);
+		//Rearrange
+		for (i = this.items.length - 1; i >= 0; i--) {
+
+			//Cache variables and intersection, continue if no intersection
+			item = this.items[i];
+			itemElement = item.item[0];
+			intersection = this._intersectsWithPointer(item);
 				if (!intersection) {
 					continue;
 				}
