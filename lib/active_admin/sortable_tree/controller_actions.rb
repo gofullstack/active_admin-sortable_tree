@@ -4,16 +4,16 @@ module ActiveAdmin::SortableTree
     attr_accessor :sortable_options
 
     def sortable(options = {})
-      options.reverse_merge! :sorting_attribute => :position,
-                             :parent_method => :parent,
-                             :children_method => :children,
-                             :roots_method => :roots,
-                             :tree => false,
-                             :max_levels => 0,
-                             :protect_root => false,
-                             :collapsible => false, #hides +/- buttons
-                             :start_collapsed => false,
-                             :sortable => true
+      options.reverse_merge! sorting_attribute: :position,
+                             parent_method: :parent,
+                             children_method: :children,
+                             roots_method: :roots,
+                             tree: false,
+                             max_levels: 0,
+                             protect_root: false,
+                             collapsible: false, #hides +/- buttons
+                             start_collapsed: false,
+                             sortable: true
 
       # BAD BAD BAD FIXME: don't pollute original class
       @sortable_options = options
@@ -21,7 +21,7 @@ module ActiveAdmin::SortableTree
       # disable pagination
       config.paginate = false
 
-      collection_action :sort, :method => :post do
+      collection_action :sort, method: :post do
         resource_name = ActiveAdmin::SortableTree::Compatibility.normalized_resource_name(active_admin_config.resource_name)
 
         records = []
@@ -37,7 +37,7 @@ module ActiveAdmin::SortableTree
             if options[:tree]
               record.send "#{options[:parent_method]}=", parent_record
             end
-            errors << {record.id => record.errors} if !record.save
+            errors << {record.id => record.errors} unless record.save
           end
         end
         if errors.empty?

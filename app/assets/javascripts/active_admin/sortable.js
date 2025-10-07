@@ -1,0 +1,95 @@
+//= require jquery-ui/widgets/sortable
+//= require jquery.mjs.nestedSortable
+
+window.ActiveAdminSortableEvent = (() => {
+  const eventToListeners = {};
+
+  return {
+    add: (event, callback) => {
+      if (!eventToListeners.hasOwnProperty(event)) {
+        eventToListeners[event] = [];
+      }
+      eventToListeners[event].push(callback);
+    },
+
+    trigger: (event, args) => {
+      if (eventToListeners.hasOwnProperty(event)) {
+        for (const callback of eventToListeners[event]) {
+          try {
+            callback.call(null, args);
+          } catch (e) {
+            if (console && console.error) {
+              console.error(e);
+            }
+          }
+        }
+      }
+    }
+  };
+})();
+
+$(() => {
+  $('.disclose').bind('click', function(event) {
+    $(this).closest('li').toggleClass('mjs-nestedSortable-collapsed').toggleClass('mjs-nestedSortable-expanded');
+  });
+
+  $(".index_as_sortable [data-sortable-type]").each(function() {
+    const $this = $(this);
+    let max_levels, tab_hack;
+
+    if ($this.data('sortable-type') === "tree") {
+      max_levels = $this.data('max-levels');
+      tab_hack = 20; // nestedSortable default
+    } else {
+      max_levels = 1;
+      tab_hack = 99999;
+    }
+
+    $this.nestedSortable({
+      forcePlaceholderSize: true,
+      forceHelperSizeType: true,
+      errorClass: 'cantdoit',
+      disableNesting: 'cantdoit',
+      handle: '> .item',
+      listType: 'ol',
+      items: 'li',
+      opacity: .6,
+      placeholder: 'placeholder',
+      revert: 250,
+      maxLevels: max_levels,
+      tabSize: tab_hack,
+      protectRoot: $this.data('protect-root'),
+      // prevent drag flickers
+      tolerance: 'pointer',
+      toleranceElement: '> div',
+      isTree: true,
+      startCollapsed: $this.data("start-collapsed"),
+      update: function() {
+        $this.nestedSortable("disable");
+        $.ajax({
+          url: $this.data("sortable-url"),
+          type: "post",
+          data: $this.nestedSortable("serialize")
+        })
+        .always(() => {
+          $this.find('.item').each(function(index) {
+            if (index % 2) {
+              $(this).removeClass('odd').addClass('even');
+            } else {
+              $(this).removeClass('even').addClass('odd');
+            }
+          });
+          $this.nestedSortable("enable");
+          ActiveAdminSortableEvent.trigger('ajaxAlways');
+        })
+        .done(() => {
+          ActiveAdminSortableEvent.trigger('ajaxDone');
+        })
+        .fail(() => {
+          ActiveAdminSortableEvent.trigger('ajaxFail');
+        });
+      }
+    });
+  });
+});
+

@@ -1,0 +1,13 @@
+gem 'puma'
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+gem 'ancestry'
+gem 'sqlite3', '>= 1.4'
+
+gem 'activeadmin'
+gem 'devise'
+gem 'rails', '~> 8.0.0'
+gem 'dartsass-rails'
+
+# vim: ft=ruby
+
