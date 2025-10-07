@@ -12,7 +12,7 @@ sortable via drag'n'drop.
 
 1. Add SortableTree to your Gemfile; then `bundle install`
     ```ruby
-    gem "active_admin-sortable_tree", "~> 2.0.0"
+    gem "active_admin-sortable_tree"
     ```
 
 2. Add a require to your JavaScript manifest `app/assets/javascripts/active_admin.js`
@@ -26,6 +26,8 @@ sortable via drag'n'drop.
     ```scss
     @import "active_admin/sortable";
     ```
+
+**Note**: As of version 2.1+, assets are no longer registered automatically to avoid deprecation warnings in ActiveAdmin 1.1+. You must manually include the assets as shown above.
 
 ## Usage (Tree)
 
@@ -198,22 +200,18 @@ or later.
 gem 'activeadmin', github: 'activeadmin', ref: 'b3a9f4b'
 ```
 
-### Suppressing warnings from Active Admin
+### Asset Registration
 
-As of Active Admin 1.1.0, `config.register_stylesheet` and `config.register_javascript` have been deprecated. `ActiveAdmin::SortableTree` uses these interfaces to register required assets automatically. Because of this, you may see a deprecation warning:
+As of version 2.1+, automatic asset registration is **disabled by default** to avoid deprecation warnings in ActiveAdmin 1.1+. 
 
-```
-DEPRECATION WARNING: Active Admin: The `register_javascript` config is deprecated and will be removed
-in v2. Import your "active_admin/sortable.js" javascript in the active_admin.js.
- (called from <main> at config/environment.rb:5)
-```
-
-You could opt out of it by setting `config.aa_sortable_tree.register_assets` to `false`:
+If you prefer automatic asset registration (not recommended for ActiveAdmin 1.1+), you can enable it:
 
 ```ruby
 # config/application.rb
-config.aa_sortable_tree.register_assets = false
+config.aa_sortable_tree.register_assets = true
 ```
+
+However, it's recommended to manually include the assets in your manifests as shown in the Installation section above.
 
 ## Semantic Versioning
 

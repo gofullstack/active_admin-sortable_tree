@@ -6,7 +6,7 @@ module ActiveAdmin
       engine_name "active_admin-sortable_tree"
 
       config.aa_sortable_tree = ActiveSupport::OrderedOptions.new
-      config.aa_sortable_tree.register_assets = true
+      config.aa_sortable_tree.register_assets = false
 
       initializer "active_admin-sortable_tree.precompile", group: :all do |app|
         app.config.assets.precompile += [
